@@ -8,15 +8,11 @@
 
 ## 📸 Screenshots
 
-> _Substitua os caminhos abaixo pelas imagens reais do seu projeto. Crie a pasta `screenshots/` na raiz e adicione os arquivos com os nomes correspondentes._
-
 | Painel de Fichas | Totem (Cliente) |
 |:---:|:---:|
-| ![Painel de Fichas](./MobileTicketsIonic/printsTela/painel.png) | ![Totem](./MobileTicketsIonic/printsTela/totemSenhas.png) |
+| ![Painel de Fichas](./printsTela/painel.png) | ![Totem](./printsTela/totemSenhas.png) |
 | **Guichê (Atendente)** | **Relatórios** |
-| ![Guichê](./MobileTicketsIonic/printsTela/guiche.png) | ![Relatório](./MobileTicketsIonic/printsTela/relatorio.png) |
-
-> 💡 **Como adicionar:** Crie `screenshots/` na raiz → adicione `painel.png`, `totem.png`, `guiche.png` e `relatorio.png` → as imagens aparecem automaticamente aqui.
+| ![Guichê](./printsTela/guiche.png) | ![Relatório](./printsTela/relatorio.png) |
 
 <br>
 
