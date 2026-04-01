@@ -7,7 +7,7 @@
 
 .painel-wrapper {
   display: flex;
-  flex-flow: row wrap; // Lado a lado no PC/TV, empilha no Telemóvel
+  flex-flow: row wrap;
   width: 100vw;
   height: 100vh;
   background-color: var(--fundo-painel);
@@ -15,6 +15,7 @@
   overflow: hidden;
 }
 
+// SEÇÃO DA SENHA ATUAL (ESQUERDA)
 .seccao-principal {
   flex: 2 1 60%; 
   display: flex;
@@ -29,67 +30,84 @@
     color: var(--cor-principal);
     font-weight: 700;
     letter-spacing: 2px;
+    text-transform: uppercase;
   }
 
   .display-container {
     text-align: center;
+    width: 100%;
     
+    // A SENHA ATUAL FICA BEM GRANDE
     .senha {
-      font-size: clamp(3rem, 15vh, 5rem); // Escala entre 5rem e 30% da altura
-      font-weight: 100;
-      line-height: 0.9;
+      font-size: clamp(4rem, 20vh, 15rem); 
+      font-weight: 800;
+      line-height: 1;
       margin: 2vh 0;
+      color: var(--cor-texto);
     }
 
     .guiche-destaque {
-      font-size: clamp(2rem, 5vh, 6rem);
+      font-size: clamp(2rem, 8vh, 6rem);
       color: var(--cor-sucesso);
+      font-weight: 600;
       margin: 0;
     }
 
     .aguarde-texto {
       font-size: 8vh;
       opacity: 0.3;
+      font-weight: bold;
     }
   }
 }
 
+// SEÇÃO DO HISTÓRICO (DIREITA)
 .barra-historico {
   flex: 1 1 30%;
   display: flex;
   flex-direction: column;
   background-color: #161616;
+  height: 100%;
 
   .label-historico {
-    padding: 3vh;
+    padding: 2vh;
     background: var(--cor-principal);
     text-align: center;
     font-weight: bold;
-    font-size: 2.5vh;
+    font-size: clamp(1rem, 2.5vh, 2rem);
+    text-transform: uppercase;
   }
 
   .lista-itens {
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow-y: auto; // Caso tenha mais itens, permite scroll interno
 
     .item-hist {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 3vh 4vw;
-      border-bottom: 1px solid #222;
+  display: flex;
+  flex-direction: column; // Empilha o número e o guichê para ganhar espaço lateral
+  justify-content: center;
+  align-items: center;
+  padding: 1.5vh; // Diminuí o padding para compactar
+  border-bottom: 1px solid #222;
+  min-height: 12vh; // Define uma altura fixa segura para caber 5 a 6 itens na tela
 
-      .hist-numero {
-        font-size: 5vh;
-        font-weight: 700;
-        color: #bbb;
-      }
-      .hist-guiche {
-        font-size: 3vh;
-        color: var(--cor-principal);
-      }
-    }
+  .hist-numero {
+    /* DIMINUIÇÃO AQUI */
+    font-size: clamp(1.5rem, 5vh, 3.5rem); // O segredo é o 5vh (5% da altura da tela)
+    font-weight: 700;
+    color: #bbb;
+    margin-bottom: 0.5vh;
+  }
+
+  .hist-guiche {
+    /* AJUSTE DO GUICHÊ PARA ACOMPANHAR */
+    font-size: clamp(0.8rem, 2.5vh, 1.5rem);
+    color: var(--cor-principal);
+    text-transform: uppercase;
+  }
+}
   }
 }
 
@@ -97,21 +115,33 @@
 @media (max-width: 768px) {
   .painel-wrapper {
     flex-direction: column;
+    overflow-y: auto;
   }
 
   .seccao-principal {
-    flex: 1;
+    flex: none;
+    height: 50vh;
+    width: 100%;
     border-right: none;
     border-bottom: 2px solid #333;
     
-    .numero-grande { font-size: 20vw; } // No telemóvel escala pela largura
+    .senha { font-size: 15vw; }
+    .guiche-destaque { font-size: 8vw; }
   }
 
   .barra-historico {
-    flex: 1;
+    flex: none;
+    width: 100%;
+    height: auto;
+
     .item-hist {
+        flex-direction: row; // No celular, número e guichê ficam lado a lado
+        justify-content: space-around;
         padding: 1.5vh 4vw;
-        .hist-numero { font-size: 4vh; }
+        min-height: 8vh;
+        
+        .hist-numero { font-size: 5vh; }
+        .hist-guiche { font-size: 3vh; }
     }
   }
 }

@@ -24,7 +24,7 @@ export class GuichePage {
     if (proxima) {
       this.senhaEmAtendimento = proxima;
     } else {
-      alert('Não há senhas na fila no momento.');
+      window.alert('Não há senhas na fila no momento.');
     }
   }
 

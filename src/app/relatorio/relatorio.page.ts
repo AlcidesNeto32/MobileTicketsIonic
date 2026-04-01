@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { FilaService } from '../services/fila';
+import { FilaService } from '../services/fila'; // Caminho corrigido
 
 @Component({
   selector: 'app-relatorio',
@@ -23,29 +23,30 @@ export class RelatorioPage {
 
   constructor(private filaService: FilaService) {}
 
+  // ionViewWillEnter garante que os dados atualizam sempre que entras na aba
   ionViewWillEnter() {
     this.atualizarDados();
   }
 
   atualizarDados() {
-    // Para que isso funcione 100%, seu FilaService precisa expor o array com TODAS as senhas geradas
-    const todosOsDados = this.filaService.getTodasAsSenhas() || [];
+    // Agora usando o nome correto do método que está no FilaService
+    const todosOsDados = this.filaService.getHistoricoCompleto() || [];
     
-    this.relatorioDetalhado = todosOsDados;
+    this.relatorioDetalhado = [...todosOsDados].reverse(); // Mostra as mais recentes primeiro
     this.totalEmitidas = todosOsDados.length;
     
     this.totalAtendidas = todosOsDados.filter((s: any) => s.status === 'Atendido').length;
     this.totalAusentes = todosOsDados.filter((s: any) => s.status === 'Ausente').length;
 
-    // Métricas SP
+    // Métricas SP (Prioritário)
     this.spEmitidas = todosOsDados.filter((s: any) => s.tipo === 'SP').length;
     this.spAtendidas = todosOsDados.filter((s: any) => s.tipo === 'SP' && s.status === 'Atendido').length;
 
-    // Métricas SE
+    // Métricas SE (Exames)
     this.seEmitidas = todosOsDados.filter((s: any) => s.tipo === 'SE').length;
     this.seAtendidas = todosOsDados.filter((s: any) => s.tipo === 'SE' && s.status === 'Atendido').length;
 
-    // Métricas SG
+    // Métricas SG (Geral)
     this.sgEmitidas = todosOsDados.filter((s: any) => s.tipo === 'SG').length;
     this.sgAtendidas = todosOsDados.filter((s: any) => s.tipo === 'SG' && s.status === 'Atendido').length;
   }

@@ -1,38 +1,66 @@
-.totem-container {
+.totem-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%; // Ocupa a altura total do ion-content
+  justify-content: space-between; // Espalha as seções (topo, botões, senha)
+  align-items: center;
+}
+.header-relogio {
+  position: absolute; top: 10px; right: 10px; text-align: right; z-index: 100;
+  .data { display: block; font-size: 0.8rem; color: #666; }
+  .hora { font-size: 1.2rem; font-weight: bold; font-family: monospace; color: var(--ion-color-primary); }
+}
+.totem-container { padding-top: 60px; max-width: 400px; margin: 0 auto; }
+.msg-fechado { ion-icon { font-size: 4rem; color: var(--ion-color-danger); } }
+
+.header-section {
+  padding-top: 10px;
+  flex: 0 1 auto;
+}
+
+.buttons-section {
+  width: 100%;
+  flex: 1 1 auto; // Permite que a área de botões cresça ou diminua
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  height: 100%;
-  max-width: 500px;
-  margin: 0 auto;
+  gap: 10px; // Espaçamento entre os botões
+}
 
-  h2 {
-    margin-bottom: 30px;
-    color: var(--ion-color-dark);
-  }
+.btn-totem {
+  --border-radius: 12px;
+  margin: 5px 0;
+  height: 60px; // Altura fixa para garantir que caibam os três
+  font-weight: bold;
+}
 
-  .btn-totem {
-    height: 80px;
-    margin-bottom: 20px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    width: 100%;
-  }
+.btn-sp{--background:var(--ion-color-danger);}
+.btn-se { --background: var(--ion-color-success); }
+.btn-sg { --background: var(--ion-color-primary); }
 
-  .btn-sp { --background: var(--ion-color-danger); }
-  .btn-se { --background: var(--ion-color-success); }
-  .btn-sg { --background: var(--ion-color-primary); }
+.ticket-section {
+  width: 100%;
+  flex: 0 1 auto;
+  padding-bottom: 10px;
+}
 
-  .ticket-card {
-    margin-top: 30px;
-    width: 100%;
-    border: 2px dashed var(--ion-color-medium);
-    
-    .senha-texto {
-      font-size: 2.5rem;
-      font-weight: 900;
-      color: var(--ion-color-dark);
-    }
-  }
+.ticket-card {
+  margin: 0;
+  border: 2px solid var(--ion-color-primary);
+  background: #fdfdfd;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.senha-texto {
+  font-size: 2.2rem !important; // Tamanho grande para ser visível no totem
+  color: black;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+// Pequeno ajuste para telas muito curtas (iPhone SE, etc)
+@media (max-height: 600px) {
+  .senha-texto { font-size: 1.8rem !important; }
+  .btn-totem { height: 50px; }
+  h2 { font-size: 1.2rem; }
 }

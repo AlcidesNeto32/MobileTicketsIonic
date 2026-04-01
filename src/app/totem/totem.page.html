@@ -1,37 +1,33 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Retire sua Senha</ion-title>
+  <ion-toolbar color="tertiary">
+    <ion-title>Totem de Senhas</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding ion-text-center">
-  <div class="totem-container">
-    <h2>Selecione o tipo de atendimento:</h2>
+<ion-content class="ion-padding">
+  <div class="header-relogio" (click)="avancarHoras()" style="cursor: pointer;">
+    <span class="data">{{ horaAtual | date:'dd/MM/yyyy' }}</span>
+    <span class="hora">{{ horaAtual | date:'HH:mm:ss' }}</span>
+    <small style="display: block; font-size: 0.6rem; color: #666;">(Clique para +3h)</small>
+  </div>
 
-    <ion-button expand="block" class="btn-totem btn-sp" (click)="emitir('SP')">
-      <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
-      Prioritário (SP)
-    </ion-button>
+  <div class="totem-container ion-text-center">
+    <div *ngIf="!isAberto" class="msg-fechado">
+      <ion-icon name="lock-closed-outline"></ion-icon>
+      <h2>POSTO FECHADO</h2>
+      <p>Atendimento das 07h às 17h</p>
+    </div>
 
-    <ion-button expand="block" class="btn-totem btn-se" (click)="emitir('SE')">
-      <ion-icon name="medkit-outline" slot="start"></ion-icon>
-      Exames (SE)
-    </ion-button>
+    <div *ngIf="isAberto">
+      <h1>Selecione seu Atendimento</h1>
+      <ion-button expand="block" color="danger" (click)="emitir('SP')">Senha Prioritário</ion-button>
+      <ion-button expand="block" color="success" (click)="emitir('SE')">Senhas de Exames (SE)</ion-button>
+      <ion-button expand="block" color="primary" (click)="emitir('SG')">Senhas Gerais</ion-button>
+    </div>
 
-    <ion-button expand="block" class="btn-totem btn-sg" (click)="emitir('SG')">
-      <ion-icon name="people-outline" slot="start"></ion-icon>
-      Geral (SG)
-    </ion-button>
-
-    <ion-card *ngIf="ultimaSenhaEmitida" class="ticket-card">
-      <ion-card-header>
-        <ion-card-subtitle>Sua Senha</ion-card-subtitle>
-        <ion-card-title class="senha-texto">{{ ultimaSenhaEmitida.numero }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        Aguarde ser chamado no painel.<br>
-        <small>Emitida em: {{ ultimaSenhaEmitida.horaEmissao | date:'HH:mm:ss' }}</small>
-      </ion-card-content>
+    <ion-card *ngIf="ultimaSenha" class="ticket">
+      <ion-card-header><ion-card-title>Sua senha: {{ ultimaSenha.numero }}</ion-card-title></ion-card-header>
+      <ion-card-content>Aguarde a ser chamado pelo painel</ion-card-content>
     </ion-card>
   </div>
 </ion-content>

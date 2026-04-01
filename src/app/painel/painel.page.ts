@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FilaService } from '../services/fila';
@@ -10,18 +10,45 @@ import { FilaService } from '../services/fila';
   standalone: true,
   imports: [IonicModule, CommonModule]
 })
-export class PainelPage {
-  // O Angular usará getters para manter a tela sempre atualizada com o Service
-  constructor(private filaService: FilaService) {}
+export class PainelPage implements OnInit, OnDestroy {
+  // Variáveis para o HTML
+  senhaPrincipal: any = null;
+  historico: any[] = [];
+  horaAtual: Date = new Date();
+  timer: any;
 
-  get senhaAtual() {
-    const historico = this.filaService.getUltimasChamadas();
-    return historico.length > 0 ? historico[0] : null; // A mais recente é a [0]
+  // Referência do timer para podermos pará-lo ao fechar a página
+  private atualizador: any;
+
+  constructor(private filaService: FilaService) { }
+
+  ngOnInit() { this.timer = setInterval(() => { this.horaAtual = this.filaService.getHoraAtualSimulada(); }, 1000) }
+
+
+  ngOnDestroy() {
+    // Limpa o timer da memória ao destruir o componente
+    if (this.atualizador) {
+      clearInterval(this.atualizador);
+    }
   }
 
-  get ultimasSenhas() {
-    const historico = this.filaService.getUltimasChamadas();
-    // Retorna do índice 1 ao 5 (ignorando a atual que já está em destaque)
-    return historico.slice(1, 6);
+  /**
+   * Sincroniza o componente com o estado atual do FilaService
+   */
+  private verificarDados() {
+    this.horaAtual = new Date();
+
+    // Puxa a senha que o atendente chamou (e que ainda não foi finalizada)
+    this.senhaPrincipal = this.filaService.getSenhaAtivaNoPainel();
+
+    // Puxa a lista das últimas 5 chamadas (para a barra lateral)
+    this.historico = this.filaService.getUltimasChamadas();
+  }
+
+  /**
+   * Método disparado pelo Ionic toda vez que a aba ganha foco
+   */
+  ionViewWillEnter() {
+    this.verificarDados();
   }
 }

@@ -4,125 +4,159 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class FilaService {
-  // Filas de espera (Agente Cliente - AC)
-  private filaSP: any[] = []; // Prioritária
-  private filaSG: any[] = []; // Geral
-  private filaSE: any[] = []; // Exames
+  // Filas em Memória
+  private filaSP: any[] = []; 
+  private filaSG: any[] = []; 
+  private filaSE: any[] = []; 
 
-  // Histórico para o Painel (Últimas 5 chamadas - Agente Sistema)
+  // Estados do Painel e Histórico
+  private senhaAtualNoPainel: any = null;
   private ultimasChamadas: any[] = [];
-
-  // Histórico Geral para o Relatório (Todas as senhas do dia)
   private historicoCompleto: any[] = [];
 
-  // Controle de alternância: [SP] -> [Comum] -> [SP]
+  // Lógica de Prioridade e Tempo
   private vezDaPrioritaria = true;
+  private offsetTempoMs = 0; // Armazena o "pulo" de tempo em milissegundos
 
   constructor() {}
 
-  // 1. GERAR SENHA (Regra: YYMMDD-PPSQ)
-  gerarSenha(tipo: 'SP' | 'SG' | 'SE') {
-    const agora = new Date();
-    
-    // Formatação da Data: YYMMDD
-    const ano = agora.getFullYear().toString().slice(-2);
-    const mes = (agora.getMonth() + 1).toString().padStart(2, '0');
-    const dia = agora.getDate().toString().padStart(2, '0');
-    const dataPrefixo = `${ano}${mes}${dia}`;
+  // --- MÁQUINA DO TEMPO ---
 
-    // Cálculo da Sequência (SQ) baseada no que já foi emitido hoje
+  /**
+   * Retorna a data atual somada ao deslocamento manual (pulo de horas).
+   * Substitui o 'new Date()' em todo o sistema.
+   */
+  getHoraAtualSimulada(): Date {
+    const agoraReal = new Date();
+    return new Date(agoraReal.getTime() + this.offsetTempoMs);
+  }
+
+  /**
+   * Adiciona horas ao relógio interno do sistema.
+   * @param horas Quantidade de horas a avançar (ex: 3)
+   */
+  pularTempo(horas: number) {
+    const milissegundos = horas * 60 * 60 * 1000;
+    this.offsetTempoMs += milissegundos;
+  }
+
+  /**
+   * Valida se o sistema está aberto (07:00 às 17:00) 
+   * usando a hora simulada.
+   */
+  isHorarioAtendimento(): boolean {
+    const hora = this.getHoraAtualSimulada().getHours();
+    return hora >= 7 && hora < 17;
+  }
+
+  // --- GESTÃO DE SENHAS (AGENTE CLIENTE / AC) ---
+
+  gerarSenha(tipo: 'SP' | 'SG' | 'SE') {
+    if (!this.isHorarioAtendimento()) {
+      console.error('Tentativa de emissão fora do horário permitido.');
+      return null;
+    }
+
+    const agora = this.getHoraAtualSimulada();
+    
+    // Formatação YYMMDD
+    const prefixoData = agora.getFullYear().toString().slice(-2) + 
+                        (agora.getMonth() + 1).toString().padStart(2, '0') + 
+                        agora.getDate().toString().padStart(2, '0');
+
+    // Sequência baseada no histórico do dia para aquele tipo
     const sequencia = (this.historicoCompleto.filter(s => s.tipo === tipo).length + 1)
-      .toString().padStart(2, '0');
+                      .toString().padStart(2, '0');
 
     const novaSenha = {
-      numero: `${dataPrefixo}-${tipo}${sequencia}`,
+      numero: `${prefixoData}-${tipo}${sequencia}`,
       tipo: tipo,
       horaEmissao: agora,
-      horaAtendimento: null,
-      horaFinalizacao: null,
-      guiche: null,
-      status: 'Aguardando' // Status: Aguardando, Atendido, Ausente
+      status: 'Aguardando',
+      guiche: null
     };
 
-    // Adiciona na fila específica e no histórico geral
+    // Adiciona na fila correta
     if (tipo === 'SP') this.filaSP.push(novaSenha);
-    else if (tipo === 'SG') this.filaSG.push(novaSenha);
-    else this.filaSE.push(novaSenha);
+    else if (tipo === 'SE') this.filaSE.push(novaSenha);
+    else this.filaSG.push(novaSenha);
 
     this.historicoCompleto.push(novaSenha);
     return novaSenha;
   }
 
-  // 2. CHAMAR PRÓXIMO (Regra de Prioridade: [SP] -> [SE|SG])
-  chamarProximo(numGuiche: number) {
-    let senhaEscolhida = null;
+  // --- GESTÃO DE ATENDIMENTO (AGENTE ATENDENTE / AA) ---
 
-    // Lógica de alternância conforme o documento
+  chamarProximo(numGuiche: number) {
+    let escolhida: any = null;
+
+    // Lógica de prioridade...
     if (this.vezDaPrioritaria && this.filaSP.length > 0) {
-      senhaEscolhida = this.filaSP.shift();
-      this.vezDaPrioritaria = false; // Próxima deve ser comum
+      escolhida = this.filaSP.shift();
+      this.vezDaPrioritaria = false;
     } else {
-      // Se for vez da comum ou se não houver SP, tenta SE depois SG
-      if (this.filaSE.length > 0) {
-        senhaEscolhida = this.filaSE.shift();
-      } else if (this.filaSG.length > 0) {
-        senhaEscolhida = this.filaSG.shift();
-      } else if (this.filaSP.length > 0) {
-        // Se não houver nenhuma comum, chama SP mesmo se não for a vez
-        senhaEscolhida = this.filaSP.shift();
-      }
+      escolhida = this.filaSE.shift() || this.filaSG.shift() || this.filaSP.shift();
       this.vezDaPrioritaria = true;
     }
 
-    if (senhaEscolhida) {
-      senhaEscolhida.guiche = numGuiche;
-      senhaEscolhida.horaAtendimento = new Date();
+    if (escolhida) {
+      // --- REGRA DE OURO PARA O PAINEL ---
+      // 1. Se já existia uma senha no telão, mandamos ela para o histórico ANTES de trocar
+      if (this.senhaAtualNoPainel) {
+        this.adicionarAoHistoricoLateral(this.senhaAtualNoPainel);
+      }
+
+      // 2. Configuramos a nova senha como a ATUAL
+      escolhida.guiche = numGuiche;
+      escolhida.horaAtendimento = this.getHoraAtualSimulada();
+      escolhida.status = 'Em Atendimento';
+      this.senhaAtualNoPainel = escolhida;
+
+      return escolhida;
+    }
+
+    return null;
+  }
+
+
+  finalizarAtendimento(senha: any, status: 'Atendido' | 'Ausente') {
+    const item = this.historicoCompleto.find(s => s.numero === senha.numero);
+    if (item) {
+      item.status = status;
+      item.horaFinalizacao = this.getHoraAtualSimulada();
       
-      // Atualiza o Painel (Agente Sistema: mantém apenas as 5 últimas)
-      this.ultimasChamadas.unshift(senhaEscolhida);
+      // Quando finaliza, a senha sai do "Destaque" e vai para o "Histórico Lateral"
+      if (this.senhaAtualNoPainel?.numero === senha.numero) {
+        this.adicionarAoHistoricoLateral(this.senhaAtualNoPainel);
+        this.senhaAtualNoPainel = null;
+      }
+    }
+  }
+
+
+// Função auxiliar interna para organizar a lista lateral
+  private adicionarAoHistoricoLateral(senha: any) {
+    // Evita duplicados na lista lateral
+    const jaExiste = this.ultimasChamadas.find(s => s.numero === senha.numero);
+    if (!jaExiste) {
+      this.ultimasChamadas.unshift({ ...senha });
       if (this.ultimasChamadas.length > 5) {
         this.ultimasChamadas.pop();
       }
-      
-      // Toca um sinal sonoro (Opcional - Simulação do Agente Sistema)
-      this.reproduzirAlerta();
-    }
-
-    return senhaEscolhida;
-  }
-
-  // 3. FINALIZAR OU DESCARTAR (Regra dos 5% de ausência)
-  finalizarAtendimento(senha: any, status: 'Atendido' | 'Ausente') {
-    const index = this.historicoCompleto.findIndex(s => s.numero === senha.numero);
-    if (index !== -1) {
-      this.historicoCompleto[index].status = status;
-      this.historicoCompleto[index].horaFinalizacao = new Date();
-      
-      // Se for atendido, o sistema calcula o tempo gasto (para o Relatório de TM)
-      // No mundo real, aqui você validaria as variações de 5min (SG) e 15min (SP)
     }
   }
 
-  // 4. GETTERS PARA AS PÁGINAS
+  // --- GETTERS PARA O PAINEL E RELATÓRIO (AGENTE SISTEMA / AS) ---
+
+  getSenhaAtivaNoPainel() {
+    return this.senhaAtualNoPainel;
+  }
+
   getUltimasChamadas() {
     return this.ultimasChamadas;
   }
 
-  getTodasAsSenhas() {
+  getHistoricoCompleto() {
     return this.historicoCompleto;
-  }
-
-  private reproduzirAlerta() {
-    const audio = new Audio('assets/sounds/notification.mp3');
-    audio.play().catch(() => console.log('Alerta visual emitido (áudio bloqueado)'));
-  }
-
-  // Limpeza diária (Regra: Reinício diário às 17h/00h)
-  resetDiario() {
-    this.filaSP = [];
-    this.filaSG = [];
-    this.filaSE = [];
-    this.ultimasChamadas = [];
-    this.historicoCompleto = [];
   }
 }
