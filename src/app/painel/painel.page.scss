@@ -1,0 +1,117 @@
+:host {
+  --fundo-painel: #0d0d0d;
+  --cor-principal: #3880ff;
+  --cor-sucesso: #2dd36f;
+  --cor-texto: #ffffff;
+}
+
+.painel-wrapper {
+  display: flex;
+  flex-flow: row wrap; // Lado a lado no PC/TV, empilha no Telemóvel
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--fundo-painel);
+  color: var(--cor-texto);
+  overflow: hidden;
+}
+
+.seccao-principal {
+  flex: 2 1 60%; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2vh;
+  border-right: 2px solid #333;
+
+  .label-topo {
+    font-size: clamp(1rem, 4vh, 3rem);
+    color: var(--cor-principal);
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+
+  .display-container {
+    text-align: center;
+    
+    .senha {
+      font-size: clamp(3rem, 15vh, 5rem); // Escala entre 5rem e 30% da altura
+      font-weight: 100;
+      line-height: 0.9;
+      margin: 2vh 0;
+    }
+
+    .guiche-destaque {
+      font-size: clamp(2rem, 5vh, 6rem);
+      color: var(--cor-sucesso);
+      margin: 0;
+    }
+
+    .aguarde-texto {
+      font-size: 8vh;
+      opacity: 0.3;
+    }
+  }
+}
+
+.barra-historico {
+  flex: 1 1 30%;
+  display: flex;
+  flex-direction: column;
+  background-color: #161616;
+
+  .label-historico {
+    padding: 3vh;
+    background: var(--cor-principal);
+    text-align: center;
+    font-weight: bold;
+    font-size: 2.5vh;
+  }
+
+  .lista-itens {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .item-hist {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3vh 4vw;
+      border-bottom: 1px solid #222;
+
+      .hist-numero {
+        font-size: 5vh;
+        font-weight: 700;
+        color: #bbb;
+      }
+      .hist-guiche {
+        font-size: 3vh;
+        color: var(--cor-principal);
+      }
+    }
+  }
+}
+
+/* AJUSTE PARA ECRÃS PEQUENOS (TELEMÓVEIS) */
+@media (max-width: 768px) {
+  .painel-wrapper {
+    flex-direction: column;
+  }
+
+  .seccao-principal {
+    flex: 1;
+    border-right: none;
+    border-bottom: 2px solid #333;
+    
+    .numero-grande { font-size: 20vw; } // No telemóvel escala pela largura
+  }
+
+  .barra-historico {
+    flex: 1;
+    .item-hist {
+        padding: 1.5vh 4vw;
+        .hist-numero { font-size: 4vh; }
+    }
+  }
+}

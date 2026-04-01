@@ -1,0 +1,25 @@
+.guiche-container {
+  max-width: 600px;
+  margin: 0 auto;
+
+  .atendimento-atual {
+    margin-top: 40px;
+    padding: 20px;
+    border-radius: 10px;
+    background: var(--ion-color-light);
+
+    h3 { color: var(--ion-color-medium); }
+
+    .senha-destaque {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--ion-color-secondary);
+      margin: 20px 0;
+    }
+  }
+
+  .espera {
+    margin-top: 60px;
+    p { color: var(--ion-color-medium); font-size: 1.2rem; }
+  }
+}

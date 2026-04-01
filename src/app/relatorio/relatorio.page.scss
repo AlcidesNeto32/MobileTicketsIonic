@@ -1,0 +1,27 @@
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.tabela-responsiva {
+  overflow-x: auto;
+  padding: 0 15px;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+
+    th, td {
+      border: 1px solid var(--ion-color-light-shade);
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--ion-color-light);
+      font-weight: bold;
+    }
+  }
+}

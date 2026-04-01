@@ -1,0 +1,38 @@
+.totem-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+
+  h2 {
+    margin-bottom: 30px;
+    color: var(--ion-color-dark);
+  }
+
+  .btn-totem {
+    height: 80px;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    width: 100%;
+  }
+
+  .btn-sp { --background: var(--ion-color-danger); }
+  .btn-se { --background: var(--ion-color-success); }
+  .btn-sg { --background: var(--ion-color-primary); }
+
+  .ticket-card {
+    margin-top: 30px;
+    width: 100%;
+    border: 2px dashed var(--ion-color-medium);
+    
+    .senha-texto {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--ion-color-dark);
+    }
+  }
+}

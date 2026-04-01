@@ -1,0 +1,28 @@
+<div class="painel-wrapper">
+  
+  <main class="seccao-principal">
+    <header class="label-topo">Senha Atual</header>
+    
+    <div class="display-container" *ngIf="senhaAtual; else semSenha">
+      <h1 class="senha">{{ senhaAtual.numero }}</h1>
+      <h2 class="guiche-destaque">Guichê {{ senhaAtual.guiche }}</h2>
+    </div>
+    
+    <ng-template #semSenha>
+      <div class="display-container">
+        <h1 class="aguarde-texto">Aguardando...</h1>
+      </div>
+    </ng-template>
+  </main>
+
+  <aside class="barra-historico">
+    <header class="label-historico">ÚLTIMAS CHAMADAS</header>
+    <div class="lista-itens">
+      <div class="item-hist" *ngFor="let s of ultimasSenhas">
+        <span class="hist-numero">{{ s.numero }}</span>
+        <span class="hist-guiche">G{{ s.guiche }}</span>
+      </div>
+    </div>
+  </aside>
+
+</div>
