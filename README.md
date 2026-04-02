@@ -117,10 +117,7 @@ src/app/
 ├── relatorio/                   ← Tab 4: Relatórios gerenciais
 │
 └── services/
-    ├── senha.service.ts         ← Geração do código YYMMDD-PPSQ
-    ├── fila.service.ts          ← Filas SP/SE/SG em BehaviorSubject
-    ├── atendimento.service.ts   ← Lógica de prioridade, TM e expediente
-    └── relatorio.service.ts     ← Agregação dos dados para relatórios
+    ├── fila.service.ts          ← Responável pelas senhas e pelo gerenciamento delas
 ```
 
 <br>
